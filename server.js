@@ -88,17 +88,19 @@ router.post('/signin', function (req, res) {
 
 router.route('/movies')
 .get((req, res) => {
-    Movie.find({}, (err, movies) => {
-        console.log(movies)
+    Movie.find({
+        title: { $exists: true, $ne: null },
+        releaseDate: { $exists: true, $ne: null },
+        genre: { $exists: true, $ne: null },
+        actors: { $exists: true, $ne: null }
+    }, (err, movies) => {
         if (err) {
             res.status(400).send(err);
         } else {
             res.status(200).json(movies);
-            console.log(movies)
         }
     });
-    })
-
+})
 
 .post((req, res) => {
     const { title, releaseDate, genre, actors } = req.body;
