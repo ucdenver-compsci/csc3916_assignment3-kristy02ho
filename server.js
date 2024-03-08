@@ -86,6 +86,103 @@ router.post('/signin', function (req, res) {
     })
 });
 
+router.route('/movies')
+.get((req, res) => {
+    Movie.find({}, (err, movies) => {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).json(movies);
+        }
+    });
+    })
+
+
+.post((req, res) => {
+    const { title, releaseDate, genre, actors } = req.body;
+
+    if (!title || !releaseDate || !genre || !actors || actors.length === 0 || actors.length === 1) {
+        return res.status(400).json({ error: 'Title, release date, genre, and at least one actor (actor name and character name) are required' });
+    }
+
+    try {
+        const movie = new Movie({ title, releaseDate, genre, actors });
+        movie.save();
+        res.status(200).json(movie);
+    } catch (error) {
+        console.error('Error creating movie:', error);
+        res.status(500).json({ error: 'Failed to create movie' });
+    }
+});
+
+router.route('/movies/:id')
+    .delete((req, res) => {
+        const movieId = req.params.id;
+
+        // Find the movie by id and delete it
+        Movie.findByIdAndDelete(movieId, (err, deletedMovie) => {
+            if (err) {
+                console.error('Error deleting movie:', err);
+                return res.status(500).json({ error: 'Failed to delete movie' });
+            }
+
+            if (!deletedMovie) {
+                return res.status(404).json({ error: 'Movie not found' });
+            }
+
+            res.status(200).json({ message: 'Movie deleted successfully', deletedMovie });
+        });
+    });
+
+
+router.route('/movies/:title')
+.get((req, res) => {
+    const movieTitle = req.params.title;
+    Movie.find({ title: movieTitle }, (err, movies) => {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            res.status(200).json(movies);
+        }
+    });
+})
+
+.put((req, res) => {
+    const currentTitle = req.params.title;
+    const newTitle = req.body.title;
+
+    // Find the movie by current title and update its title
+    Movie.findOneAndUpdate({ title: currentTitle }, { title: newTitle }, { new: true }, (err, updatedMovie) => {
+        if (err) {
+            res.status(400).send(err);
+        } else if (!updatedMovie) {
+            res.status(404).json({ error: 'Movie not found' });
+        } else {
+            res.status(200).json(updatedMovie);
+        }
+    });
+})
+
+
+
+.delete((req, res) => {
+    const movieTitle = req.params.title;
+
+    // Find the movie by id and delete it
+    Movie.findOneAndDelete({ title: movieTitle }, (err, deletedMovie) => {
+        if (err) {
+            console.error('Error deleting movie:', err);
+            return res.status(500).json({ error: 'Failed to delete movie' });
+        }
+
+        if (!deletedMovie) {
+            return res.status(404).json({ error: 'Movie not found' });
+        }
+
+        res.status(200).json({ message: 'Movie deleted successfully', deletedMovie });
+    });
+});
+
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only
