@@ -88,7 +88,7 @@ router.post('/signin', function (req, res) {
 
 router.route('/movies')
 .get((req, res) => {
-    Movie.find({}, (err, movies) => {
+    Movie.find({}, 'title releaseDate genre actors', (err, movies) => {
         if (err) {
             res.status(400).send(err);
         } else {
