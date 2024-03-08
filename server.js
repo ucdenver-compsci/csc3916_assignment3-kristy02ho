@@ -105,7 +105,7 @@ router.route('/movies')
 .post((req, res) => {
     const { title, releaseDate, genre, actors } = req.body;
 
-    if (!title || !releaseDate || !genre || !actors || actors.length === 0 || actors.length === 1) {
+    if (!title || !releaseDate || !genre || !actors || actors.length === 0) {
         return res.status(400).json({ error: 'Title, release date, genre, and at least one actor (actor name and character name) are required' });
     }
 
