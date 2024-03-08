@@ -89,6 +89,7 @@ router.post('/signin', function (req, res) {
 router.route('/movies')
 .get((req, res) => {
     Movie.find({}, (err, movies) => {
+        console.log(movies)
         if (err) {
             res.status(400).send(err);
         } else {
