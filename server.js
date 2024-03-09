@@ -119,34 +119,36 @@ router.route('/movies')
     }
 });
 
-router.route('/movies/:id')
-    .delete((req, res) => {
-        const movieId = req.params.id;
+// router.route('/movies/:id')
+//     .delete((req, res) => {
+//         const movieId = req.params.id;
 
-        // Find the movie by id and delete it
-        Movie.findByIdAndDelete(movieId, (err, deletedMovie) => {
-            if (err) {
-                console.error('Error deleting movie:', err);
-                return res.status(500).json({ error: 'Failed to delete movie' });
-            }
+//         // Find the movie by id and delete it
+//         Movie.findByIdAndDelete(movieId, (err, deletedMovie) => {
+//             if (err) {
+//                 console.error('Error deleting movie:', err);
+//                 return res.status(500).json({ error: 'Failed to delete movie' });
+//             }
 
-            if (!deletedMovie) {
-                return res.status(404).json({ error: 'Movie not found' });
-            }
+//             if (!deletedMovie) {
+//                 return res.status(404).json({ error: 'Movie not found' });
+//             }
 
-            res.status(200).json({ message: 'Movie deleted successfully', deletedMovie });
-        });
-    });
+//             res.status(200).json({ message: 'Movie deleted successfully', deletedMovie });
+//         });
+//     });
 
 
 router.route('/movies/:title')
 .get((req, res) => {
     const movieTitle = req.params.title;
-    Movie.find({ title: movieTitle }, (err, movies) => {
+    Movie.find({ title: movieTitle }, (err, movie) => {
         if (err) {
             res.status(400).send(err);
+        } else if (!movie) {
+            res.status(404).json({ error: 'Movie not found' });
         } else {
-            res.status(200).json(movies);
+            res.status(200).json(movie);
         }
     });
 })
@@ -172,7 +174,6 @@ router.route('/movies/:title')
 .delete((req, res) => {
     const movieTitle = req.params.title;
 
-    // Find the movie by id and delete it
     Movie.findOneAndDelete({ title: movieTitle }, (err, deletedMovie) => {
         if (err) {
             console.error('Error deleting movie:', err);
