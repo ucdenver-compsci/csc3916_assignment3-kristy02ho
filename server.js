@@ -145,7 +145,7 @@ router.route('/movies/:title')
     Movie.find({ title: movieTitle }, (err, movie) => {
         if (err) {
             res.status(400).send(err);
-        } else if (!movie) {
+        } else if (movie.length === 0) {
             res.status(404).json({ error: 'Movie not found' });
         } else {
             res.status(200).json(movie);
